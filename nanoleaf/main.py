@@ -40,11 +40,15 @@ def is_market_open():
 
 
 def get_nasdaq_change():
-    ticker = yf.Ticker("^IXIC")
-    hist = ticker.history(period="2d")
-    if len(hist) < 2:
-        raise ValueError("Not enough data")
-    prev_close = hist["Close"].iloc[-2]
+    ticker = yf.Ticker("NQ=F")
+    hist = ticker.history(period="5d", interval="1h")
+    hist.index = hist.index.tz_convert(ET)
+
+    # Find the most recent 4 PM ET bar (RTH settlement reference)
+    rth_closes = hist[hist.index.hour == 16]
+    if rth_closes.empty:
+        raise ValueError("No RTH settlement bar found")
+    prev_close = rth_closes["Close"].iloc[-1]
     latest     = hist["Close"].iloc[-1]
     return (latest - prev_close) / prev_close * 100
 

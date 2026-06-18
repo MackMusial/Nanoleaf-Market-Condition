@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(kill 1933)",
+      "Bash(nohup venv/bin/python main.py)",
+      "Bash(echo \"PID: $!\")"
+    ]
+  }
+}
