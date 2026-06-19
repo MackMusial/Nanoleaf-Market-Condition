@@ -19,7 +19,7 @@ def log(msg):
 
 DEVICES = [
     {"name": "Lines",  "ip": "192.168.1.134", "token": "mI84OYhxVmeu2FiY1uvReRHkRB8mHPyx"},
-    {"name": "Shapes", "ip": "192.168.1.54",  "token": "WjFNij5CtmHJiQOug0uwknxwxVDxSfrP"},
+    #{"name": "Shapes", "ip": "192.168.1.54",  "token": "WjFNij5CtmHJiQOug0uwknxwxVDxSfrP"},
 ]
 
 RED   = {"hue": 0,   "sat": 100, "brightness": 100}
@@ -40,16 +40,9 @@ def is_market_open():
 
 
 def get_nasdaq_change():
-    ticker = yf.Ticker("NQ=F")
-    hist = ticker.history(period="5d", interval="1h")
-    hist.index = hist.index.tz_convert(ET)
-
-    # Find the most recent 4 PM ET bar (RTH settlement reference)
-    rth_closes = hist[hist.index.hour == 16]
-    if rth_closes.empty:
-        raise ValueError("No RTH settlement bar found")
-    prev_close = rth_closes["Close"].iloc[-1]
-    latest     = hist["Close"].iloc[-1]
+    info       = yf.Ticker("NQ=F").fast_info
+    prev_close = info.previous_close
+    latest     = info.last_price
     return (latest - prev_close) / prev_close * 100
 
 
